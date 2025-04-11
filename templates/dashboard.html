@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cloud Dashboard</title>
+    <script>
+        function updateLastSync() {
+            // Fetch the last sync time from the Flask API
+            fetch('/last_sync')
+                .then(response => response.json())
+                .then(data => {
+                    const lastSyncElement = document.getElementById('last-sync-time');
+                    if (data.last_sync) {
+                        lastSyncElement.textContent = `Last Updated: ${data.last_sync}`;
+                    } else {
+                        lastSyncElement.textContent = 'Last Updated: N/A';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching last sync time:', error);
+                });
+        }
+
+        // Call the function every 10 seconds
+        setInterval(updateLastSync, 10000);
+
+        // Initial call to update the sync time immediately
+        window.onload = updateLastSync;
+    </script>
+</head>
+<body>
+    <h1>Cloud Dashboard</h1>
+    <iframe
+        src="{{ kibana_url }}"
+        width="100%"
+        height="800px"
+        frameborder="0"
+        title="Kibana Dashboard"
+    ></iframe>
+    <p id="last-sync-time" style="margin-top: 10px;">Last Updated: Loading...</p>
+</body>
+</html>
