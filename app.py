@@ -11,6 +11,9 @@ CORS(app)  # ✅ Enable CORS
 ELASTICSEARCH_URL = 'http://elasticsearch:9200'
 KIBANA_URL = 'https://kibana-kompose-ndrc.apps.osc-trailer.trailer.ndrc.mil/app/dashboards#/view/f4c19b48-01c6-4fa2-bcac-64a87da4c652?_g=(refreshInterval:(pause:!t,value:60000),time:(from:now%2Fd,to:now%2Fd))&_a=()'
 
+# Sync variable
+last_sync = None
+
 # Cloud Database Connection
 def db_connection():
     return psycopg2.connect(
@@ -29,12 +32,14 @@ def home():
 @app.route('/update', methods=['POST'])
 def update_data():
     data = request.json
+    global last_sync
     index = "trucks"
     data["last_updated"] = datetime.utcnow().isoformat() + "Z"
 
     response = requests.post(f"{ELASTICSEARCH_URL}/{index}/_doc", json=data)
-
+    last_sync = data["last_updated"]
     conn = None
+    
     try:
         print(f"📥 Receiving data {data}")
         conn = db_connection()
@@ -81,6 +86,11 @@ def get_truck_events():
 @app.route('/dashboard')
 def dashboard():
     return render_template('dashboard.html', kibana_url=KIBANA_URL)
-
+    
+# ♻️ Show last sync of data
+@app.route('/last_sync')
+def get_last_sync():
+    return jsonify({"last_sync": last_sync})
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8080)
