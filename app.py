@@ -8,7 +8,7 @@ app = Flask(__name__)
 CORS(app)  # ✅ Enable CORS
 
 # Elasticsearch
-ELASTICSEARCH_URL = 'http://elasticsearch:9200'
+ELASTICSEARCH_URL = "https://elasticsearch-route-kompose-ndrc.apps.osc-trailer.trailer.ndrc.mil:9200"
 KIBANA_URL = 'https://kibana-kompose-ndrc.apps.osc-trailer.trailer.ndrc.mil/app/dashboards#/view/f4c19b48-01c6-4fa2-bcac-64a87da4c652?_g=(refreshInterval:(pause:!t,value:60000),time:(from:now%2Fd,to:now%2Fd))&_a=()'
 
 # Sync variable
